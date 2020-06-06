@@ -1,4 +1,4 @@
-pipeline {
+ipeline {
     agent {
         docker {
             image 'node:12-alpine'
@@ -25,11 +25,22 @@ pipeline {
                 branch 'development'
             }
             steps {
-                sh 'chmod +x ./jenkins/scripts/deliver.sh'
+                sh 'chmod +x ./jenkins/scripts'
                 sh './jenkins/scripts/deliver.sh'
                 input message: 'Finished using the web site? (Click "Proceed" to continue)'
-                sh 'chmod +x ./jenkins/scripts/kill.sh'
                 sh './jenkins/scripts/kill.sh'
+            }
+        }
+        stage('Deploy for production') {
+            when {
+                branch 'production'
+            }
+            steps {
+                sh 'chmod +x ./jenkins/scripts/deployment.sh'
+                sh './jenkins/scripts/deployment.sh'
+                input message: 'Finished with your production version? (Click "Proceed" to continue)'
+                sh 'chmod +x ./jenkins/scripts/kill.sh'
+                sh './jenkins/scripts/kill.sh'                
             }
         }        
     }
